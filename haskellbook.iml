@@ -15,7 +15,7 @@
         <CLASSES />
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/base-4.9.1.0" />
+          <root url="file://$MODULE_DIR$/ideaHaskellLib/base-4.8.2.0" />
         </SOURCES>
       </library>
     </orderEntry>
