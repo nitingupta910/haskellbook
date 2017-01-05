@@ -281,7 +281,7 @@ newtype Mem s a =
 
 instance (Semigroup a, Monoid a) => Semigroup (Mem s a) where
   (<>) (Mem f) (Mem g) = Mem h where
-      h = \x -> ((fst $ f x) <> (fst $ g x), x)
+      h = \x -> ((fst $ f x) <> (fst $ g x), snd $ g $ snd $ f x)
 
 instance (Semigroup a, Monoid a) => Monoid (Mem s a) where
   mempty = Mem (\s -> (mempty, s))
