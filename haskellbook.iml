@@ -11,29 +11,11 @@
     <orderEntry type="jdk" jdkName="Haskell Tool Stack" jdkType="Haskell Tool Stack SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
-      <library name="HUnit">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/HUnit-1.3.1.2" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="QuickCheck">
         <CLASSES />
         <JAVADOC />
         <SOURCES>
           <root url="file://$MODULE_DIR$/ideaHaskellLib/QuickCheck-2.8.2" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="ansi-terminal">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/ansi-terminal-0.6.2.3" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -47,20 +29,20 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="async">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/async-2.1.1" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="base">
         <CLASSES />
         <JAVADOC />
         <SOURCES>
           <root url="file://$MODULE_DIR$/ideaHaskellLib/base-4.8.2.0" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="binary">
+        <CLASSES />
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/ideaHaskellLib/binary-0.7.5.0" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -92,24 +74,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="directory">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/directory-1.2.2.0" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="filepath">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/filepath-1.4.0.0" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="ghc-prim">
         <CLASSES />
         <JAVADOC />
@@ -119,38 +83,11 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="hspec">
+      <library name="hashable">
         <CLASSES />
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/hspec-2.2.4" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="hspec-core">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/hspec-core-2.2.4" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="hspec-discover">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/hspec-discover-2.2.4" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="hspec-expectations">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/hspec-expectations-0.7.2" />
+          <root url="file://$MODULE_DIR$/ideaHaskellLib/hashable-1.2.4.0" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -173,15 +110,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="quickcheck-io">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/quickcheck-io-0.1.4" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="random">
         <CLASSES />
         <JAVADOC />
@@ -191,20 +119,20 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="setenv">
+      <library name="semigroups">
         <CLASSES />
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/setenv-0.1.1.3" />
+          <root url="file://$MODULE_DIR$/ideaHaskellLib/semigroups-0.18.2" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="stm">
+      <library name="tagged">
         <CLASSES />
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/stm-2.4.4.1" />
+          <root url="file://$MODULE_DIR$/ideaHaskellLib/tagged-0.8.4" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -214,6 +142,15 @@
         <JAVADOC />
         <SOURCES>
           <root url="file://$MODULE_DIR$/ideaHaskellLib/template-haskell-2.10.0.0" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="text">
+        <CLASSES />
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/ideaHaskellLib/text-1.2.2.1" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -245,11 +182,11 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="unix">
+      <library name="unordered-containers">
         <CLASSES />
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/ideaHaskellLib/unix-2.7.1.0" />
+          <root url="file://$MODULE_DIR$/ideaHaskellLib/unordered-containers-0.2.7.1" />
         </SOURCES>
       </library>
     </orderEntry>
