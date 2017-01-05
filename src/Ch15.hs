@@ -2,7 +2,8 @@ module Ch15 where
 
 -- CHAPTER 15. MONOID, SEMIGROUP
 import           Control.Monad
-import           Data.Monoid
+import           Data.Monoid     hiding ((<>))
+import           Data.Semigroup  (Semigroup, (<>))
 import           Test.QuickCheck
 
 data Optional a
@@ -20,17 +21,17 @@ instance Monoid a =>
 
 -- Check for monoid laws
 monoidAssoc
-  :: (Eq m, Monoid m)
+  :: (Eq m, Semigroup m)
   => m -> m -> m -> Bool
 monoidAssoc a b c = (a <> (b <> c)) == ((a <> b) <> c)
 
 monoidLeftIdentity
-  :: (Eq m, Monoid m)
+  :: (Eq m, Semigroup m, Monoid m)
   => m -> Bool
 monoidLeftIdentity m = (mempty <> m) == m
 
 monoidRightIdentity
-  :: (Eq m, Monoid m)
+  :: (Eq m, Semigroup m, Monoid m)
   => m -> Bool
 monoidRightIdentity m = (m <> mempty) == m
 
@@ -49,10 +50,18 @@ instance Monoid Bull where
 
 type BullMappend = Bull -> Bull -> Bull -> Bool
 
+instance Semigroup Bull where
+  (<>) Twoo Twoo = Twoo
+  (<>) _ _       = Fools
+
 -- Ex: Maybe another Monoid
 newtype First' a = First'
   { getFirst' :: Optional a
   } deriving (Eq, Show)
+
+instance (Semigroup a) =>
+         Semigroup (First' a) where
+  (<>) (First' a) (First' b) = First' (a <> b)
 
 instance (Arbitrary a) =>
          Arbitrary (Optional a) where
@@ -66,13 +75,20 @@ instance (Arbitrary a) =>
     a <- arbitrary
     return (First' a)
 
-instance (Monoid a) => Monoid (First' a) where
+instance (Semigroup a) =>
+         Semigroup (Optional a) where
+  (<>) (Only a) (Only b) = Only (a <> b)
+  (<>) Nada (Only a)     = Only a
+  (<>) (Only a) (Nada)   = Only a
+  (<>) _ _               = Nada
+
+instance (Semigroup a, Monoid a) =>
+         Monoid (First' a) where
   mempty = First' Nada
   mappend (First' a) (First' b) = First' (a <> b)
 
 --firstMappend :: First' a -> First' a -> First' a
 --firstMappend = mappend
-
 type FirstMappend = First' String -> First' String -> First' String -> Bool
 
 type FstId = First' String -> Bool
