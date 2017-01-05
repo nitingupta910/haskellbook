@@ -231,8 +231,67 @@ instance (Arbitrary a, Arbitrary b) =>
 
 type AccumulateBothAssoc a b = AccumulateBoth a b -> AccumulateBoth a b -> AccumulateBoth a b -> Bool
 
+-- MONOID EXERCISES
+monoidLeftIdentity
+  :: (Eq m, Semigroup m, Monoid m)
+  => m -> Bool
+monoidLeftIdentity m = (mempty <> m) == m
+
+monoidRightIdentity
+  :: (Eq m, Semigroup m, Monoid m)
+  => m -> Bool
+monoidRightIdentity m = (m <> mempty) == m
+
+-- Trivial
+instance Monoid Trivial where
+  mempty = Trivial
+  mappend = (<>)
+
+-- Identity
+instance (Semigroup a, Monoid a) =>
+         Monoid (Identity a) where
+  mempty = Identity mempty
+  mappend = (<>)
+
+-- BoolConj
+instance Monoid BoolConj where
+  mempty = BoolConj True
+  mappend = (<>)
+
+-- BoolDisj
+instance Monoid BoolDisj where
+  mempty = BoolDisj False
+  mappend = (<>)
+
+-- Combine
+instance (Semigroup b, Monoid b) => Monoid (Combine a b) where
+  mempty = Combine (\_ -> mempty)
+  mappend = (<>)
+
+-- Comp
+instance (Semigroup a, Monoid a) => Monoid (Comp a) where
+  mempty = Comp mempty
+  mappend = (<>)
+
+-- Mem
+newtype Mem s a =
+  Mem {
+    runMem :: s -> (a, s)
+  }
+
+instance (Semigroup a, Monoid a) => Semigroup (Mem s a) where
+  (<>) (Mem f) (Mem g) = Mem h where
+      h = \x -> ((fst $ f x) <> (fst $ g x), x)
+
+instance (Semigroup a, Monoid a) => Monoid (Mem s a) where
+  mempty = Mem (\s -> (mempty, s))
+  mappend = (<>)
+
+f' = Mem $ \s -> ("hi", s + 1)
+
 main :: IO ()
 main = do
+  putStrLn "Monoid checks:\n"
   quickCheck (semigroupAssoc :: TrivialAssoc)
   quickCheck (semigroupAssoc :: IdentityAssoc Int)
   quickCheck (semigroupAssoc :: TwoAssoc Int Int)
@@ -244,3 +303,26 @@ main = do
   quickCheck (semigroupAssoc :: ValidationAssoc Int Int)
   quickCheck (semigroupAssoc :: AccumulateRightAssoc Int Int)
   quickCheck (semigroupAssoc :: AccumulateBothAssoc Int Int)
+  putStrLn "\n\nMonad checks:\n"
+  putStrLn "\nTrivial:"
+  quickCheck (semigroupAssoc :: TrivialAssoc)
+  quickCheck (monoidLeftIdentity :: Trivial -> Bool)
+  quickCheck (monoidRightIdentity :: Trivial -> Bool)
+  putStrLn "\nIdentity:"
+  quickCheck (semigroupAssoc :: IdentityAssoc String)
+  quickCheck (monoidLeftIdentity :: Identity String -> Bool)
+  quickCheck (monoidRightIdentity :: Identity String -> Bool)
+  putStrLn "\nBoolConj:"
+  quickCheck (semigroupAssoc :: BoolConjAssoc)
+  quickCheck (monoidLeftIdentity :: BoolConj -> Bool)
+  quickCheck (monoidRightIdentity :: BoolConj -> Bool)
+  putStrLn "\nBoolDisj:"
+  quickCheck (semigroupAssoc :: BoolDisjAssoc)
+  quickCheck (monoidLeftIdentity :: BoolDisj -> Bool)
+  quickCheck (monoidRightIdentity :: BoolDisj -> Bool)
+  putStrLn "\nMem:"
+  print $ runMem (f' <> mempty) 0
+  print $ runMem (mempty <> f') 0
+  print $ (runMem mempty 0 :: (String, Int))
+  print $ runMem (f' <> mempty) 0 == runMem f' 0
+  print $ runMem (mempty <> f') 0 == runMem f' 0
