@@ -98,7 +98,7 @@ instance (Semigroup a, Semigroup b, Semigroup c, Semigroup d) =>
          Semigroup (Four a b c d) where
   (<>) (Four a b c d) (Four a' b' c' d') = Four (a <> a') (b <> b') (c <> c') (d <> d')
 
-type FourAssoc a b c d = (Four a b c d) -> (Four a b c d) -> (Four a b c d) -> Bool
+type FourAssoc a b c d = Four a b c d -> Four a b c d -> Four a b c d -> Bool
 
 -- BoolConj
 newtype BoolConj =
@@ -139,6 +139,7 @@ instance Semigroup (Or a b) where
   (<>) (Fst a) (Snd a') = Snd a'
   (<>) (Snd a) _        = Snd a
 
+-- OrAssoc
 type OrAssoc a b = (Or a b) -> (Or a b) -> (Or a b) -> Bool
 
 instance (Arbitrary a, Arbitrary b) =>
@@ -147,6 +148,88 @@ instance (Arbitrary a, Arbitrary b) =>
     a <- arbitrary
     b <- arbitrary
     frequency [(1, return $ Fst a), (1, return $ Snd b)]
+
+newtype Combine a b = Combine
+  { unCombine :: (a -> b)
+  }
+
+instance (Semigroup b) =>
+         Semigroup (Combine a b) where
+  (<>) (Combine f) (Combine g) = Combine h
+    where
+      h x = (f x) <> (g x)
+
+newtype Comp a = Comp
+  { unComp :: (a -> a)
+  }
+
+instance (Semigroup a) =>
+         Semigroup (Comp a) where
+  (<>) (Comp f) (Comp g) = Comp h
+    where
+      h x = (f x) <> (g x)
+
+-- Validation
+data Validation a b
+  = Failure' a
+  | Success' b
+  deriving (Eq, Show)
+
+-- Why book provides 'Semigroup a' condition here?
+instance Semigroup a =>
+         Semigroup (Validation a b) where
+  (<>) (Failure' a) (Failure' b) = Failure' a
+  (<>) (Failure' a) _            = Failure' a
+  (<>) (Success' a) _            = Success' a
+
+instance (Arbitrary a, Arbitrary b) =>
+         Arbitrary (Validation a b) where
+  arbitrary = do
+    a <- arbitrary
+    b <- arbitrary
+    frequency [(1, return $ Failure' a), (1, return $ Success' b)]
+
+type ValidationAssoc a b = Validation a b -> Validation a b -> Validation a b -> Bool
+
+-- AccumulateRight
+newtype AccumulateRight a b =
+  AccumulateRight (Validation a b)
+  deriving (Eq, Show)
+
+instance Semigroup b =>
+         Semigroup (AccumulateRight a b) where
+  (<>) (AccumulateRight (Success' a)) (AccumulateRight (Success' b)) = AccumulateRight (Success' (a <> b))
+  (<>) (AccumulateRight (Success' a)) (AccumulateRight (Failure' b)) = AccumulateRight (Success' a)
+  (<>) (AccumulateRight (Failure' a)) (AccumulateRight (Success' b)) = AccumulateRight (Success' b)
+  (<>) (AccumulateRight (Failure' a)) (AccumulateRight (Failure' b)) = AccumulateRight (Failure' a)
+
+instance (Arbitrary a, Arbitrary b) =>
+         Arbitrary (AccumulateRight a b) where
+  arbitrary = do
+    v <- arbitrary
+    return $ AccumulateRight v
+
+type AccumulateRightAssoc a b = AccumulateRight a b -> AccumulateRight a b -> AccumulateRight a b -> Bool
+
+-- AccumulateBoth
+newtype AccumulateBoth a b =
+  AccumulateBoth (Validation a b)
+  deriving (Eq, Show)
+
+instance (Semigroup a, Semigroup b) =>
+         Semigroup (AccumulateBoth a b) where
+  (<>) (AccumulateBoth (Success' a)) (AccumulateBoth (Success' b)) = AccumulateBoth (Success' $ a <> b)
+  (<>) (AccumulateBoth (Success' a)) (AccumulateBoth (Failure' b)) = AccumulateBoth (Success' $ a)
+  (<>) (AccumulateBoth (Failure' a)) (AccumulateBoth (Success' b)) = AccumulateBoth (Success' $ b)
+  (<>) (AccumulateBoth (Failure' a)) (AccumulateBoth (Failure' b)) = AccumulateBoth (Failure' $ a <> b)
+
+instance (Arbitrary a, Arbitrary b) =>
+         Arbitrary (AccumulateBoth a b) where
+  arbitrary = do
+    v <- arbitrary
+    return $ AccumulateBoth v
+
+type AccumulateBothAssoc a b = AccumulateBoth a b -> AccumulateBoth a b -> AccumulateBoth a b -> Bool
 
 main :: IO ()
 main = do
@@ -158,3 +241,6 @@ main = do
   quickCheck (semigroupAssoc :: BoolConjAssoc)
   quickCheck (semigroupAssoc :: BoolDisjAssoc)
   quickCheck (semigroupAssoc :: OrAssoc Int Int)
+  quickCheck (semigroupAssoc :: ValidationAssoc Int Int)
+  quickCheck (semigroupAssoc :: AccumulateRightAssoc Int Int)
+  quickCheck (semigroupAssoc :: AccumulateBothAssoc Int Int)
