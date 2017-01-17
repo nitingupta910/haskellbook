@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 import GHC.Arr
 
 data Bool =
@@ -62,3 +64,29 @@ data More b a
 instance Functor (More x) where
   fmap f (L a b a') = L (f a) b (f a')
   fmap f (R b a b') = R b (f a) b'
+
+data Quant a b
+  = Finance
+  | Desk a
+  | Bloor b
+
+instance Functor (Quant a) where
+  fmap _ Finance = Finance
+  fmap _ (Desk a) = Desk a
+  fmap f (Bloor b) = Bloor (f b)
+
+data K' a b =
+  K' a
+
+instance Functor (K' a) where
+  fmap f (K' a) = K' a
+
+newtype Flip f a b =
+  Flip (f b a)
+  deriving (Eq, Show)
+
+newtype K a b =
+  K a  
+
+instance Functor (Flip K a) where
+  fmap f (Flip f' b a) = Flip 
