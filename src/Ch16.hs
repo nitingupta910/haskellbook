@@ -1,3 +1,5 @@
+{-# language RankNTypes #-}
+
 module Ch16 where
 
 import Test.QuickCheck
@@ -225,6 +227,64 @@ data Trivial = Trivial
 -- * -> *
 
 -- end exs: Instances of Func
+
+
+-- begin exs: Possibility
+data Possibly a
+  = LolNope
+  | Yeppers a
+  deriving (Eq, Show)
+
+instance Functor Possibly where
+  fmap f LolNope = LolNope
+  fmap f (Yeppers a) = Yeppers (f a)
+-- end exs: Possibility
+
+liftedInc :: (Functor f, Num b) => f b -> f b
+liftedInc = fmap (+1)
+
+liftedShow :: (Functor f, Show a) => f a -> f String
+liftedShow = fmap show
+
+
+-- begin: short exercise
+data Sum a b
+  = First a
+  | Second b
+  deriving (Eq, Show)
+
+instance Functor (Sum a) where
+  fmap f (First a) = First a
+  fmap f (Second b) = Second (f b)
+-- end: short exercise
+
+newtype Constant a b = Constant
+  { getConstant :: a
+  } deriving (Eq, Show)
+
+instance Functor (Constant m) where
+  fmap f (Constant v) = Constant v
+
+data Wrap f a =
+  Wrap (f a)
+  deriving (Eq, Show)
+
+instance Functor f => Functor (Wrap f) where
+  fmap f (Wrap fa) = Wrap (fmap f fa)
+
+-- 16.14  IO Functor
+
+-- getLine :: IO String
+-- read :: Read a => String -> a
+
+getInt :: IO Int
+getInt = fmap read getLine
+
+-- Natural Transformations
+-- Does opposite of a functor: changes the structure
+-- without touching values contained inside them.
+type Nat f g = forall a. f a -> g a
+
 
 main :: IO ()
 main = do
