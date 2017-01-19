@@ -53,3 +53,23 @@ instance Applicative Identity where
   pure = Identity
   (<*>) (Identity f) (Identity a) = Identity (f a)
 
+newtype Constant a b =
+  Constant { getConstant :: a}
+  deriving (Eq, Ord, Show)
+
+instance Functor (Constant a) where
+  fmap _ (Constant a) = Constant a
+
+instance Monoid a => Applicative (Constant a) where
+  pure _ = Constant { getConstant = mempty }
+  (<*>) (Constant f) (Constant b) = Constant (f `mappend` b)
+
+
+newtype Sum = Sum
+  { getSum :: Int
+  } deriving (Eq, Show)
+
+instance Monoid Sum where
+  mempty = Sum 0
+  mappend (Sum a) (Sum b) = Sum (a + b)
+  
