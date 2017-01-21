@@ -72,4 +72,8 @@ newtype Sum = Sum
 instance Monoid Sum where
   mempty = Sum 0
   mappend (Sum a) (Sum b) = Sum (a + b)
-  
+
+-- 17.5  exs
+ex1 = const <$> Just "Hello" <*> pure "World"
+ex2 = (,,,) <$> Just 90 <*> Just 10 <*> Just "Tirerness" <*> pure [1, 2, 3]
+
