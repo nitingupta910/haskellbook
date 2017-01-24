@@ -1,3 +1,4 @@
+import Data.Monoid
 import Control.Applicative
 import Data.List (elemIndex)
 
@@ -65,15 +66,51 @@ instance Monoid a => Applicative (Constant a) where
   (<*>) (Constant f) (Constant b) = Constant (f `mappend` b)
 
 
-newtype Sum = Sum
-  { getSum :: Int
+-- Data.Monoid also defined a Sum type
+newtype Sum' = Sum'
+  { getSum' :: Int
   } deriving (Eq, Show)
 
-instance Monoid Sum where
-  mempty = Sum 0
-  mappend (Sum a) (Sum b) = Sum (a + b)
+instance Monoid Sum' where
+  mempty = Sum' 0
+  mappend (Sum' a) (Sum' b) = Sum' (a + b)
 
 -- 17.5  exs
 ex1 = const <$> Just "Hello" <*> pure "World"
 ex2 = (,,,) <$> Just 90 <*> Just 10 <*> Just "Tirerness" <*> pure [1, 2, 3]
 
+
+-- List Applicative ex
+data List a
+  = Nil
+  | Cons a
+         (List a)
+  deriving (Eq, Show)
+
+instance Functor List where
+  fmap f Nil = Nil
+  fmap f (Cons a l) = Cons (f a) (fmap f l)
+
+
+instance Applicative List where
+  pure a = Cons a Nil
+  (<*>) _ Nil = Nil
+  (<*>) Nil _ = Nil
+  (<*>) (Cons f fs) lst = append (fmap f lst) (fs <*> lst)
+
+-- hints for Applicative List
+append :: List a -> List a -> List a
+append Nil ys = ys
+append (Cons x xs) ys = Cons x $ xs `append` ys
+
+fold :: (a -> b -> b) -> b -> List a -> b
+fold _ b Nil = b
+fold f b (Cons h t) = f h (fold f b t)
+
+concat' :: List (List a) -> List a
+concat' = fold append Nil
+
+-- write this one in terms of concat' and fmap
+flatMap :: (a -> List b) -> List a -> List b
+flatMap f as = concat' $ fmap f as
+-- end hint
