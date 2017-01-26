@@ -50,6 +50,7 @@ y'' = lookup 2 $ zip xs ys
 summed :: Maybe Integer
 summed = sum <$> ((,) <$> x'' <*> y'')
 
+-- identity
 newtype Identity a =
   Identity a
   deriving (Eq, Show)
@@ -61,6 +62,17 @@ instance Applicative Identity where
   pure = Identity
   (<*>) (Identity f) (Identity a) = Identity (f a)
 
+instance Arbitrary a =>
+         Arbitrary (Identity a) where
+  arbitrary = do
+    a <- arbitrary
+    elements [Identity a]
+
+instance Eq a =>
+         EqProp (Identity a) where
+  (=-=) = eq
+
+-- constant
 newtype Constant a b = Constant
   { getConstant :: a
   } deriving (Eq, Ord, Show)
@@ -111,6 +123,16 @@ instance Applicative List where
   (<*>) Nil _ = Nil
   (<*>) (Cons f fs) lst = append (fmap f lst) (fs <*> lst)
 
+instance Arbitrary a =>
+         Arbitrary (List a) where
+  arbitrary = do
+    a <- arbitrary
+    elements [Nil, Cons a Nil]
+
+instance Eq a =>
+         EqProp (List a) where
+  (=-=) = eq
+
 -- hints for Applicative List
 append :: List a -> List a -> List a
 append Nil ys = ys
@@ -128,10 +150,11 @@ flatMap :: (a -> List b) -> List a -> List b
 flatMap f as = concat' $ fmap f as
 
 -- end hint
--- TODO: use checkers library to check List applicative
 -- ZipList Applicative Ex
 take' :: Int -> List a -> List a
-take' = undefined
+take' _ Nil = Nil
+take' 0 x = x
+take' n (Cons a t) = Cons a (take' (n - 1) t)
 
 newtype ZipList' a =
   ZipList' (List a)
@@ -157,6 +180,12 @@ instance Applicative ZipList' where
     where
 
 
+instance Arbitrary a =>
+         Arbitrary (ZipList' a) where
+  arbitrary = do
+    a <- arbitrary
+    elements [ZipList' a]
+
 zip' :: List (a -> b) -> List a -> List b
 zip' Nil _ = Nil
 zip' _ Nil = Nil
@@ -178,7 +207,20 @@ instance Monoid e =>
          Applicative (Validation e) where
   pure = Success'
   (<*>) (Failure' e) (Failure' e') = Failure' (e <> e')
+  (<*>) (Failure' e) _ = Failure' e
+  (<*>) _ (Failure' e) = Failure' e
   (<*>) (Success' f) (Success' a') = Success' (f a')
+
+instance (Arbitrary e, Arbitrary a) =>
+         Arbitrary (Validation e a) where
+  arbitrary = do
+    e <- arbitrary
+    a <- arbitrary
+    elements [Failure' e, Success' a]
+
+instance (Eq e, Eq a) =>
+         EqProp (Validation e a) where
+  (=-=) = eq
 
 -- testing
 data Bull
@@ -198,12 +240,20 @@ instance Monoid Bull where
 instance EqProp Bull where
   (=-=) = eq
 
+type S = String
+
 main :: IO ()
 main = do
+  putStr "\nBull"
   quickBatch $ monoid Twoo
-  let trigger = undefined :: [(String, String, Int)]
+  putStr "\nMaybe"
+  let trigger = undefined :: [(Maybe Int, String, Int)]
   quickBatch $ applicative trigger
-  let trigger2 = undefined :: [(Maybe Int, String, Int)]
-  quickBatch $ applicative trigger2
---let trigger3 = undefined :: [(List Int, String, Int)]
---quickBatch $ applicative trigger3
+  putStr "\nIdentity"
+  quickBatch $ applicative (undefined :: Identity (S, S, S))
+  putStr "\nList"
+  quickBatch $ applicative (undefined :: List (S, S, S))
+  putStr "\nZipList'"
+  quickBatch $ applicative (undefined :: ZipList' (S, S, S))
+  putStr "\nValidation"
+  quickBatch $ applicative (undefined :: Validation S (S, S, S))
