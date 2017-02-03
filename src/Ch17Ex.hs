@@ -123,7 +123,8 @@ instance Functor (Four a b c) where
 instance (Monoid a, Monoid b, Monoid c) =>
          Applicative (Four a b c) where
   pure = Four mempty mempty mempty
-  (<*>) (Four a b c f) (Four a' b' c' x) = Four (a <> a') (b <> b') (c <> c') (f x)
+  (<*>) (Four a b c f) (Four a' b' c' x) =
+    Four (a <> a') (b <> b') (c <> c') (f x)
 
 instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) =>
          Arbitrary (Four a b c d) where
@@ -165,7 +166,8 @@ instance Functor (Four' a) where
 instance Monoid a =>
          Applicative (Four' a) where
   pure = Four' mempty mempty mempty
-  (<*>) (Four' a1 a2 a3 f) (Four' a1' a2' a3' x) = Four' (a1 <> a1') (a2 <> a2') (a3 <> a3') (f x)
+  (<*>) (Four' a1 a2 a3 f) (Four' a1' a2' a3' x) =
+    Four' (a1 <> a1') (a2 <> a2') (a3 <> a3') (f x)
 
 -- combinations
 stops :: String
